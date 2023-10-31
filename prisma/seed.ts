@@ -1,10 +1,26 @@
-import { type User, PrismaClient } from "@prisma/client";
+import {
+  type Video,
+  type User,
+  type VideoEngagement,
+  type FollowEngagement,
+  type Announcement,
+  PrismaClient,
+  type AnnouncementEngagement,
+  type Comment,
+  type Playlist,
+  type PlaylistHasVideo,
+} from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
 const prisma = new PrismaClient();
 const usersFile = path.join(__dirname, "data/user.json");
 const users: User[] = JSON.parse(fs.readFileSync(usersFile, "utf-8")) as User[];
+
+const videosFile = path.join(__dirname, "data/video.json");
+const videos: Video[] = JSON.parse(
+  fs.readFileSync(videosFile, "utf-8"),
+) as Video[];
 
 async function processInChunks<T, U>(
   items: T[],
@@ -51,6 +67,24 @@ async function main() {
         backgroundImage: user.backgroundImage
           ? `https://res.cloudinary.com/${cloudinaryName}${user.backgroundImage}`
           : null,
+      },
+    }),
+  );
+
+  await processInChunks(videos, 1, (video) =>
+    prisma.video.upsert({
+      where: { id: video.id },
+      update: {
+        ...video,
+        createdAt: video.createdAt ? new Date(video.createdAt) : undefined,
+        thumbnailUrl: `https://res.cloudinary.com/${cloudinaryName}${video.thumbnailUrl}`,
+        videoUrl: `https://res.cloudinary.com/${cloudinaryName}${video.videoUrl}`,
+      },
+      create: {
+        ...video,
+        createdAt: video.createdAt ? new Date(video.createdAt) : undefined,
+        thumbnailUrl: `https://res.cloudinary.com/${cloudinaryName}${video.thumbnailUrl}`,
+        videoUrl: `https://res.cloudinary.com/${cloudinaryName}${video.videoUrl}`,
       },
     }),
   );
