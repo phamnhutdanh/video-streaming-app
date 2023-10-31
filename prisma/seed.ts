@@ -133,6 +133,20 @@ async function main() {
   await processInChunks(videoEngagements, 1, (videoEngagement) =>
     prisma.videoEngagement.create({ data: videoEngagement }),
   );
+
+  await processInChunks(followEngagements, 1, async (followEngagement) => {
+    const existingFollowEngagements = await prisma.followEngagement.findMany({
+      where: {
+        followerId: followEngagement.followerId,
+        followingId: followEngagement.followingId,
+      },
+    });
+    if (existingFollowEngagements.length === 0 || !existingFollowEngagements) {
+      return prisma.followEngagement.create({ data: followEngagement });
+    } else {
+      return;
+    }
+  });
 }
 
 main()
