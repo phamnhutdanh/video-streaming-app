@@ -147,6 +147,10 @@ async function main() {
       return;
     }
   });
+
+  await processInChunks(announcements, 1, (announcement) =>
+    prisma.announcement.create({ data: announcement }),
+  );
 }
 
 main()
