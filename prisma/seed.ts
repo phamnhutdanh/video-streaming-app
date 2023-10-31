@@ -77,6 +77,18 @@ async function processInChunks<T, U>(
   return results;
 }
 
+function generateNextId(start: number, end: number) {
+  let current = start;
+  return function getNextId() {
+    const nextId = current;
+    current = current >= end ? start : current + 1;
+    return nextId.toString();
+  };
+}
+
+// Use these functions where you need to update the currentUserId and currentVideoId
+const getNextVideoId = generateNextId(1, 31);
+const getNextUserId = generateNextId(164, 178);
 const cloudinaryName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME || "";
 
 async function main() {
@@ -175,6 +187,24 @@ async function main() {
         return;
       }
     },
+  );
+
+  await processInChunks(comments, 1, (comment) =>
+    prisma.comment.upsert({
+      where: { id: comment.id },
+      update: {
+        ...comment,
+        videoId: getNextVideoId(),
+        userId: getNextUserId(),
+        createdAt: comment.createdAt ? new Date(comment.createdAt) : undefined,
+      },
+      create: {
+        ...comment,
+        userId: getNextUserId(),
+        videoId: getNextVideoId(),
+        createdAt: comment.createdAt ? new Date(comment.createdAt) : undefined,
+      },
+    }),
   );
 }
 
