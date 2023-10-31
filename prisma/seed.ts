@@ -86,14 +86,23 @@ function generateNextId(start: number, end: number) {
   };
 }
 
-// Use these functions where you need to update the currentUserId and currentVideoId
 const getNextVideoId = generateNextId(1, 31);
 const getNextUserId = generateNextId(164, 178);
 const cloudinaryName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME || "";
 
 async function main() {
+  // Delete all records from tables
   await prisma.user.deleteMany();
+  await prisma.video.deleteMany();
+  await prisma.videoEngagement.deleteMany();
+  await prisma.followEngagement.deleteMany();
+  await prisma.announcement.deleteMany();
+  await prisma.announcementEngagement.deleteMany();
+  await prisma.comment.deleteMany();
+  await prisma.playlist.deleteMany();
+  await prisma.playlistHasVideo.deleteMany();
 
+  // Populate tables with new data
   await processInChunks(users, 1, (user) =>
     prisma.user.upsert({
       where: { id: user.id },
@@ -168,11 +177,10 @@ async function main() {
     announcementEngagements,
     1,
     async (announcementEngagement) => {
-      // Try to find an existing announcementEngagement record with the same userId and announcementId
       const existingAnnouncementEngagements =
         await prisma.announcementEngagement.findMany({
           where: {
-            announcementId: announcementEngagement.announcementId, // Fixed typo here
+            announcementId: announcementEngagement.announcementId,
             userId: announcementEngagement.userId,
           },
         });
@@ -188,7 +196,6 @@ async function main() {
       }
     },
   );
-
   await processInChunks(comments, 1, (comment) =>
     prisma.comment.upsert({
       where: { id: comment.id },
@@ -206,8 +213,31 @@ async function main() {
       },
     }),
   );
-}
 
+  await processInChunks(playlists, 1, async (playlist) =>
+    prisma.playlist.upsert({
+      where: { id: playlist.id },
+      update: {
+        ...playlist,
+        userId: getNextUserId(),
+        createdAt: playlist.createdAt
+          ? new Date(playlist.createdAt)
+          : undefined,
+      },
+      create: {
+        ...playlist,
+        userId: getNextUserId(),
+        createdAt: playlist.createdAt
+          ? new Date(playlist.createdAt)
+          : undefined,
+      },
+    }),
+  );
+
+  await processInChunks(playlistHasVideos, 1, (playlistHasVideo) =>
+    prisma.playlistHasVideo.create({ data: playlistHasVideo }),
+  );
+}
 main()
   .catch((e) => console.error(e))
   .finally(() => {
