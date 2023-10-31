@@ -151,6 +151,31 @@ async function main() {
   await processInChunks(announcements, 1, (announcement) =>
     prisma.announcement.create({ data: announcement }),
   );
+
+  await processInChunks(
+    announcementEngagements,
+    1,
+    async (announcementEngagement) => {
+      // Try to find an existing announcementEngagement record with the same userId and announcementId
+      const existingAnnouncementEngagements =
+        await prisma.announcementEngagement.findMany({
+          where: {
+            announcementId: announcementEngagement.announcementId, // Fixed typo here
+            userId: announcementEngagement.userId,
+          },
+        });
+      if (
+        existingAnnouncementEngagements.length === 0 ||
+        !existingAnnouncementEngagements
+      ) {
+        return prisma.announcementEngagement.create({
+          data: announcementEngagement,
+        });
+      } else {
+        return;
+      }
+    },
+  );
 }
 
 main()
