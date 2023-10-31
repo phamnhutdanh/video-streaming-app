@@ -22,6 +22,47 @@ const videos: Video[] = JSON.parse(
   fs.readFileSync(videosFile, "utf-8"),
 ) as Video[];
 
+const videoEngagementsFile = path.join(__dirname, "data/videoEngagement.json");
+const videoEngagements: VideoEngagement[] = JSON.parse(
+  fs.readFileSync(videoEngagementsFile, "utf-8"),
+) as VideoEngagement[];
+
+const followEngagementsFile = path.join(
+  __dirname,
+  "data/followEngagement.json",
+);
+const followEngagements: FollowEngagement[] = JSON.parse(
+  fs.readFileSync(followEngagementsFile, "utf-8"),
+) as FollowEngagement[];
+
+const announcementsFile = path.join(__dirname, "data/announcement.json");
+const announcements: Announcement[] = JSON.parse(
+  fs.readFileSync(announcementsFile, "utf-8"),
+) as Announcement[];
+
+const announcementEngagementsFile = path.join(
+  __dirname,
+  "data/announcementEngagement.json",
+);
+const announcementEngagements: AnnouncementEngagement[] = JSON.parse(
+  fs.readFileSync(announcementEngagementsFile, "utf-8"),
+) as AnnouncementEngagement[];
+
+const commentsFile = path.join(__dirname, "data/comment.json");
+const comments: Comment[] = JSON.parse(
+  fs.readFileSync(commentsFile, "utf-8"),
+) as Comment[];
+
+const playlistsFile = path.join(__dirname, "data/playlist.json");
+const playlists: Playlist[] = JSON.parse(
+  fs.readFileSync(playlistsFile, "utf-8"),
+) as Playlist[];
+
+const playlistHasVideoFile = path.join(__dirname, "data/playlistHasVideo.json");
+const playlistHasVideos: PlaylistHasVideo[] = JSON.parse(
+  fs.readFileSync(playlistHasVideoFile, "utf-8"),
+) as PlaylistHasVideo[];
+
 async function processInChunks<T, U>(
   items: T[],
   chunkSize: number,
@@ -87,6 +128,10 @@ async function main() {
         videoUrl: `https://res.cloudinary.com/${cloudinaryName}${video.videoUrl}`,
       },
     }),
+  );
+
+  await processInChunks(videoEngagements, 1, (videoEngagement) =>
+    prisma.videoEngagement.create({ data: videoEngagement }),
   );
 }
 
