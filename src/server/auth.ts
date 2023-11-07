@@ -1,3 +1,4 @@
+import { type GetServerSidePropsContext } from "next";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {
   getServerSession,
@@ -6,6 +7,7 @@ import {
 } from "next-auth";
 
 import EmailProvider from "next-auth/providers/email";
+
 
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
@@ -68,7 +70,14 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
+    
   ],
+  theme: {
+    colorScheme: "light", // "auto" | "dark" | "light"
+    brandColor: "#11999E", // Hex color code
+    logo: "/logo.svg", // Absolute URL to image
+    buttonText: "#FFFFFF", // Hex color code
+  },
 };
 
 /**
