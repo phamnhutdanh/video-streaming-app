@@ -1,8 +1,7 @@
-
 import Head from "next/head";
 import Link from "next/link";
 import Button from "~/Components/Buttons/Button";
-import {Navbar} from '~/Components/Components'
+import {Navbar, Sidebar} from '~/Components/Components'
 
 import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
@@ -22,8 +21,8 @@ export default async function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      
       <Navbar />
+      <Sidebar />
     </>
   );
 }
