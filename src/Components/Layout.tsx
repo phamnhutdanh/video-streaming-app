@@ -1,5 +1,3 @@
-"use client";
-
 import { Navbar, Sidebar } from "./Components";
 import React, { useState } from "react";
 import { Menu } from "./Icons/Icons";

@@ -16,7 +16,7 @@ export default async function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout>
+      <Layout closeSidebar={false}>
         <p>This is from home pages</p>
       </Layout>
     </>
