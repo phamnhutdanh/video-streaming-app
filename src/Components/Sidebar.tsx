@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { signIn, useSession } from "next-auth/react";
@@ -38,19 +38,19 @@ function classNames(...classes: string[]) {
 }
 
 interface SidebarProps {
-//   isOpen: boolean;
-//   setSidebarOpen: (open: boolean) => void;
+  isOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
   closeSidebar?: boolean;
 }
 export default function Sidebar({
-//   isOpen,
-//   setSidebarOpen,
+  isOpen,
+  setSidebarOpen,
   closeSidebar,
 }: SidebarProps) {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const userId = sessionData?.user.id;
-  const pathname = usePathname()
+  const pathname = usePathname();
   const DesktopNavigation: NavigationItem[] = [
     {
       name: "Home",
@@ -156,7 +156,7 @@ export default function Sidebar({
       <div
         className={classNames(
           closeSidebar ? "lg:w-20" : "lg:w-56",
-          "bottom-0 top-16  hidden lg:fixed lg:z-40 lg:flex lg:flex-col"
+          "bottom-0 top-16  hidden lg:fixed lg:z-40 lg:flex lg:flex-col",
         )}
       >
         {/*  Sidebar component FOR DESKTOP, swap this element with another sidebar if you like */}
@@ -182,13 +182,13 @@ export default function Sidebar({
                           item.current
                             ? " bg-gray-50 text-primary-600"
                             : " text-gray-700 hover:bg-gray-50 hover:text-primary-600",
-                          "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                          "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
                         )}
                       >
                         {item.current
                           ? item.icon("h-5 w-5 shrink-0 stroke-primary-600 ")
                           : item.icon(
-                              "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600"
+                              "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600",
                             )}
                         <p className={classNames(closeSidebar ? "hidden" : "")}>
                           {item.name}
@@ -239,7 +239,42 @@ export default function Sidebar({
           </nav>
         </div>
       </div>
-     
+
+      <Transition.Root show={isOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-50 lg:hidden"
+          onClose={setSidebarOpen}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-green-500/80" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 flex">
+            <Transition.Child
+              as={Fragment}
+              enter="transition-opacity ease-linear duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-linear duration-300"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+                <p>Hello sidebar mobile</p>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </>
   );
 }

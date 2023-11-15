@@ -1,16 +1,10 @@
 import Head from "next/head";
-import Link from "next/link";
-import Button from "~/Components/Buttons/Button";
-import {Navbar, Sidebar} from '~/Components/Components'
+import { Layout } from "~/Components/Components";
 
-import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 
 export default async function Home() {
-  const hello = await api.post.hello.query({ text: "from tRPC" });
-  const session = await getServerAuthSession();
-
   return (
     <>
       <Head>
@@ -21,10 +15,10 @@ export default async function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Navbar />
-      <Sidebar />
+
+      <Layout>
+        <p>This is from home pages</p>
+      </Layout>
     </>
   );
 }
-
-
