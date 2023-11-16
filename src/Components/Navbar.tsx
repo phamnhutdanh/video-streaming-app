@@ -1,4 +1,3 @@
-"use client"
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 // import { Logo } from "./Icons/Logo";
@@ -20,9 +19,7 @@ import {
 } from "./Icons/Icons";
 import User from "./Icons/User";
 // Add this function above your existing code to create a new IconWrapper component
-import { useRouter } from "next/navigation";
-import { useSearchParams } from 'next/navigation'
-import { usePathname } from 'next/navigation'
+import { useRouter } from "next/router";
 import { type ChangeEvent, type KeyboardEvent } from "react";
 import { UserImage } from "./Components";
 
@@ -43,7 +40,6 @@ function classNames(...classes: string[]) {
 }
 
 export default function Navbar({ children }: NavbarProps) {
-  
   const { data: sessionData } = useSession();
   const userId = sessionData?.user.id;
 
@@ -129,14 +125,13 @@ export default function Navbar({ children }: NavbarProps) {
 
   const [searchInput, setSearchInput] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams()
-  const search = searchParams.get(searchInput)
-  
 
   const handleSearch = async () => {
     try {
-      await router.push("/SearchPage?q="+searchInput);
-      console.log(search)
+      await router.push({
+        pathname: "/SearchPage",
+        query: { q: searchInput },
+      });
     } catch (error) {
       console.error("Error navigating to search page:", error);
     }
@@ -245,7 +240,7 @@ export default function Navbar({ children }: NavbarProps) {
                           className={classNames(
                             active ? "bg-gray-100 " : "",
                             "block px-4 py-2 text-sm text-gray-700",
-                            item.lineAbove ? "border-t border-gray-200" : ""
+                            item.lineAbove ? "border-t border-gray-200" : "",
                           )}
                         >
                           <div className="flex items-center ">

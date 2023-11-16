@@ -1,11 +1,8 @@
-"use client";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { Layout } from "~/Components/Components";
 import { ErrorMessage, LoadingMessage } from "~/Components/ErrorMessage";
-
-import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/shared";
+import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const { data, isLoading, error } = api.video.getRandomVideos.useQuery(40);
@@ -36,13 +33,12 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <Layout>
         {!data ? (
           <Error />
         ) : (
           <>
-            <p>Data is true</p>
+            <p>Hello world</p>
           </>
         )}
       </Layout>
@@ -50,4 +46,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default api.withTRPC(Home);
+export default Home;
