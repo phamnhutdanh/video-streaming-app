@@ -8,9 +8,8 @@ import {
 
 import EmailProvider from "next-auth/providers/email";
 
-
 import { env } from "~/env.mjs";
-import { db } from "~/server/db";
+import { prisma } from "./db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -48,7 +47,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(prisma),
   providers: [
     EmailProvider({
       server: {
@@ -70,7 +69,6 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
-    
   ],
   theme: {
     colorScheme: "light", // "auto" | "dark" | "light"
@@ -85,4 +83,9 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = () => getServerSession(authOptions);
+export const getServerAuthSession = (ctx: {
+  req: GetServerSidePropsContext["req"];
+  res: GetServerSidePropsContext["res"];
+}) => {
+  return getServerSession(ctx.req, ctx.res, authOptions);
+};

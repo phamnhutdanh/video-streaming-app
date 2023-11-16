@@ -1,10 +1,14 @@
+"use client";
+import { type NextPage } from "next";
 import Head from "next/head";
 import { Layout } from "~/Components/Components";
 
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
+import { api } from "~/trpc/shared";
 
-export default async function Home() {
+const Home: NextPage = () => {
+  const { data, isLoading, error } = api.video.getRandomVideos.useQuery(40);
+
   return (
     <>
       <Head>
@@ -21,4 +25,6 @@ export default async function Home() {
       </Layout>
     </>
   );
-}
+};
+
+export default api.withTRPC(Home);
