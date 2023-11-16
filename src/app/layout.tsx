@@ -30,23 +30,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-// import "~/styles/globals.css";
-
-// import { type AppType } from "next/app";
-// import { type Session } from "next-auth";
-// import SessionProvider from "./_components/SessionProvider";
-// import { api } from "~/trpc/shared";
-
-// const RootLayout: AppType<{ session: Session | null }> = ({
-//   Component,
-//   pageProps: { session, ...pageProps },
-// }) => {
-//   return (
-//     <SessionProvider session={session}>
-//       <Component {...pageProps} />
-//     </SessionProvider>
-//   );
-// };
-
-// export default api.withTRPC(RootLayout);
