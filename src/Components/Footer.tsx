@@ -1,6 +1,6 @@
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { ClockRewind, Folder, Home, UserCheck } from "./Icons/Icons";
 
 interface NavigationItem {
@@ -15,7 +15,6 @@ function classNames(...classes: string[]) {
 
 export default function Footer() {
   const router = useRouter();
-  const pathname = usePathname();
   const { data: sessionData } = useSession();
   const userId = sessionData?.user.id;
   const tabs: NavigationItem[] = [
@@ -23,26 +22,26 @@ export default function Footer() {
       name: "Home",
       path: `/`,
       icon: (className) => <Home className={className} />,
-      current: pathname === `/`,
+      current: router.pathname === `/`,
     },
 
     {
       name: "History",
       path: userId ? `/playlist/History` : "sign-in",
       icon: (className) => <ClockRewind className={className} />,
-      current: pathname === `/playlist/History`,
+      current: router.pathname === `/playlist/History`,
     },
     {
       name: "Library",
       path: userId ? `/${String(userId)}/ProfilePlaylists` : "sign-in",
       icon: (className) => <Folder className={className} />,
-      current: pathname === `/${String(userId)}/ProfilePlaylists`,
+      current: router.asPath === `/${String(userId)}/ProfilePlaylists`,
     },
     {
       name: "Following",
       path: userId ? `/${String(userId)}/ProfileFollowing` : "sign-in",
       icon: (className) => <UserCheck className={className} />,
-      current: pathname === `/${String(userId)}/ProfileFollowing`,
+      current: router.asPath === `/${String(userId)}/ProfileFollowing`,
     },
   ];
   return (

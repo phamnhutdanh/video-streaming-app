@@ -22,7 +22,7 @@ import {
 } from "./Icons/Icons";
 import { Logo } from "./Icons/Logo";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { UserImage } from "./Components";
 
 interface NavigationItem {
@@ -49,43 +49,43 @@ export default function Sidebar({
   const router = useRouter();
   const { data: sessionData } = useSession();
   const userId = sessionData?.user.id;
-  const pathname = usePathname();
+
   const DesktopNavigation: NavigationItem[] = [
     {
       name: "Home",
       path: `/`,
       icon: (className) => <Home className={className} />,
-      current: pathname === `/`,
+      current: router.pathname === `/`,
     },
     {
       name: "Liked Videos",
       path: userId ? `/playlist/LikedVideos` : "sign-in",
       icon: (className) => <ThumbsUp className={className} />,
-      current: pathname === `/playlist/LikedVideos`,
+      current: router.pathname === `/playlist/LikedVideos`,
     },
     {
       name: "History",
       path: userId ? `/playlist/History` : "sign-in",
       icon: (className) => <ClockRewind className={className} />,
-      current: pathname === `/playlist/History`,
+      current: router.pathname === `/playlist/History`,
     },
     {
       name: "Your Videos",
       path: userId ? `/${String(userId)}/ProfileVideos` : "sign-in",
       icon: (className) => <VideoRecorder className={className} />,
-      current: pathname === `/${String(userId)}/ProfileVideos`,
+      current: router.asPath === `/${String(userId)}/ProfileVideos`,
     },
     {
       name: "Library",
       path: userId ? `/${String(userId)}/ProfilePlaylists` : "sign-in",
       icon: (className) => <Folder className={className} />,
-      current: pathname === `/${String(userId)}/ProfilePlaylists`,
+      current: router.asPath === `/${String(userId)}/ProfilePlaylists`,
     },
     {
       name: "Following",
       path: userId ? `/${String(userId)}/ProfileFollowing` : "sign-in",
       icon: (className) => <UserCheck className={className} />,
-      current: pathname === `/${String(userId)}/ProfileFollowing`,
+      current: router.asPath === `/${String(userId)}/ProfileFollowing`,
     },
   ];
   const SignedInMobileNavigation: NavigationItem[] = [
@@ -93,31 +93,31 @@ export default function Sidebar({
       name: "Profile",
       path: `/${String(userId)}/ProfileVideos`,
       icon: (className) => <User className={className} />,
-      current: pathname === `/Profile`,
+      current: router.pathname === `/Profile`,
     },
     {
       name: "Creator Studio",
       path: `/Dashboard`,
       icon: (className) => <Brush className={className} />,
-      current: pathname === `/CreatorStudio`,
+      current: router.pathname === `/CreatorStudio`,
     },
     {
       name: "Help",
       path: `/Blog/Help`,
       icon: (className) => <HelpCircle className={className} />,
-      current: pathname === `/Blog/Help`,
+      current: router.pathname === `/Blog/Help`,
     },
     {
       name: "Settings",
       path: `/Settings`,
       icon: (className) => <Settings className={className} />,
-      current: pathname === `/Settings`,
+      current: router.pathname === `/Settings`,
     },
     {
       name: "Feedback",
       path: `mailto:vidchill@vidchill.com`,
       icon: (className) => <MessagePlusSquare className={className} />,
-      current: pathname === `/Feedback`,
+      current: router.pathname === `/Feedback`,
     },
   ];
   const SignedOutMobileNavigation: NavigationItem[] = [
@@ -125,14 +125,14 @@ export default function Sidebar({
       name: "Help",
       path: `/Blog/Help`,
       icon: (className) => <HelpCircle className={className} />,
-      current: pathname === `/Blog/Help`,
+      current: router.pathname === `/Blog/Help`,
     },
 
     {
       name: "Feedback",
       path: `mailto:vidchill@vidchill.com`,
       icon: (className) => <MessagePlusSquare className={className} />,
-      current: pathname === `/Feedback`,
+      current: router.pathname === `/Feedback`,
     },
   ];
 
@@ -142,12 +142,13 @@ export default function Sidebar({
 
   useEffect(() => {
     DesktopNavigation.forEach((nav) => {
-      nav.current = nav.path === pathname;
+      nav.current = nav.path === router.pathname;
     });
     mobileNavigation.forEach((nav) => {
-      nav.current = nav.path === pathname;
+      nav.current = nav.path === router.pathname;
     });
-  }, [pathname]);
+  }, [router.pathname]);
+
   return (
     <>
       {/* Static sidebar for desktop */}
@@ -371,7 +372,6 @@ export default function Sidebar({
                               }
                             }}
                           >
-                            {" "}
                             Sign Up
                           </Button>
                           <Button
@@ -385,7 +385,6 @@ export default function Sidebar({
                               }
                             }}
                           >
-                            {" "}
                             Log In
                           </Button>
                         </li>
