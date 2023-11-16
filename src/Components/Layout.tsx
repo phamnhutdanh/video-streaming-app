@@ -1,4 +1,4 @@
-import { Navbar, Sidebar } from "./Components";
+import { Navbar, Sidebar, Footer } from "./Components";
 import React, { useState } from "react";
 import { Menu } from "./Icons/Icons";
 
@@ -30,7 +30,9 @@ export default function Layout({ children, closeSidebar }: LayoutProps) {
         closeSidebar={closeSidebar}
         setSidebarOpen={setSidebarOpen}
       ></Sidebar>
-      <div className="lg:hidden">{/* <Footer /> */}</div>
+      <div className="lg:hidden">
+        <Footer />
+      </div>
 
       <div className={classNames(closeSidebar ? "lg:pl-20" : "lg:pl-56")}>
         <main className="py-24">
