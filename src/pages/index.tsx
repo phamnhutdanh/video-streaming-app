@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { Layout } from "~/Components/Components";
+import { Layout, MuliColumnVideo } from "~/Components/Components";
 import { ErrorMessage, LoadingMessage } from "~/Components/ErrorMessage";
 import { api } from "~/utils/api";
 
@@ -38,7 +38,19 @@ const Home: NextPage = () => {
           <Error />
         ) : (
           <>
-            <p>Hello world</p>
+             <MuliColumnVideo
+              videos={data.videos.map((video) => ({
+                id: video?.id || "",
+                title: video?.title || "",
+                thumbnailUrl: video?.thumbnailUrl || "",
+                createdAt: video?.createdAt || new Date(),
+                views: video?.views || 0,
+              }))}
+              users={data.users.map((user) => ({
+                name: user?.name || "",
+                image: user?.image || "",
+              }))}
+            />
           </>
         )}
       </Layout>
