@@ -18,7 +18,6 @@ interface VideoComponentProps {
   refetch?: () => Promise<unknown>;
 }
 
-
 export const SingleColumnVideo: React.FC<VideoComponentProps> = ({
   videos,
   users,
@@ -50,7 +49,6 @@ export const SingleColumnVideo: React.FC<VideoComponentProps> = ({
     })}
   </div>
 );
-
 
 export const MuliColumnVideo: React.FC<VideoComponentProps> = ({
   videos,
@@ -87,6 +85,38 @@ export const MuliColumnVideo: React.FC<VideoComponentProps> = ({
   </div>
 );
 
+export const SmallSingleColumnVideo: React.FC<VideoComponentProps> = ({
+  videos,
+  users,
+  refetch,
+}) => (
+  <>
+    {videos.map((video, index) => {
+      const user = users[index];
+      if (!user) {
+        return null;
+      }
+      return (
+        <Link href={`/video/${video.id}`} key={video.id} onClick={refetch}>
+          <div className=" relative isolate my-4 flex flex-col gap-4 rounded-2xl border hover:bg-gray-100 lg:flex-row ">
+            <div className=" aspect-[16/9] sm:aspect-[2/1] lg:w-52  lg:shrink-0">
+              <Thumbnail thumbnailUrl={video.thumbnailUrl} />
+            </div>
+            <div className="mt-2 flex w-full flex-col items-start overflow-hidden text-xs  max-lg:mx-2">
+              <VideoTitle
+                title={video.title}
+                limitHeight={true}
+                limitSize={true}
+              />
+              <VideoInfo views={video.views} createdAt={video.createdAt} />
+              <UserName name={user.name || ""} />
+            </div>
+          </div>
+        </Link>
+      );
+    })}
+  </>
+);
 
 export function VideoTitle({
   title,
@@ -108,7 +138,6 @@ export function VideoTitle({
   );
 }
 
-
 export function VideoInfo({
   views,
   createdAt,
@@ -129,30 +158,28 @@ export function VideoInfo({
 }
 
 export function UserImage({
-    image,
-    className = "",
-  }: {
-    image: string;
-    className?: string;
-  }) {
-    return (
-      <div className={`relative h-10 w-10 ${className}`}>
-        <Image
-          src={image || "/profile.jpg"}
-          alt=""
-          className="absolute rounded-full"
-          fill
-        />
-      </div>
-    );
-  }
+  image,
+  className = "",
+}: {
+  image: string;
+  className?: string;
+}) {
+  return (
+    <div className={`relative h-10 w-10 ${className}`}>
+      <Image
+        src={image || "/profile.jpg"}
+        alt=""
+        className="absolute rounded-full"
+        fill
+      />
+    </div>
+  );
+}
 
-  export function UserName({ name }: { name: string }) {
-    return (
-      <p className="max-h-6 overflow-hidden text-sm font-semibold leading-6 text-gray-900">
-        {name}
-      </p>
-    );
-  }
-
-  
+export function UserName({ name }: { name: string }) {
+  return (
+    <p className="max-h-6 overflow-hidden text-sm font-semibold leading-6 text-gray-900">
+      {name}
+    </p>
+  );
+}
