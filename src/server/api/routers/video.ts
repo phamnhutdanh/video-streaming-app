@@ -129,7 +129,7 @@ export const videoRouter = createTRPCRouter({
       return { videos: randomVideos, users: randomUsers };
     }),
 
-    getVideosBySearch: publicProcedure
+  getVideosBySearch: publicProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
       const videosWithUser = await ctx.prisma.video.findMany({

@@ -26,7 +26,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Vidchill</title>
+        <title>Video Streaming</title>
         <meta
           name="description"
           content=" Enjoy the videos and music you love, upload original content, and share it all with friends, family, and the world on VidChill."
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
           <Error />
         ) : (
           <>
-             <MuliColumnVideo
+            <MuliColumnVideo
               videos={data.videos.map((video) => ({
                 id: video?.id || "",
                 title: video?.title || "",
