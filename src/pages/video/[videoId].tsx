@@ -11,10 +11,13 @@ import {
   LoadingMessage,
   UserImage,
   SmallSingleColumnVideo,
+  Description,
+  CommentSection,
 } from "~/Components/Components";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { VideoInfo, VideoTitle } from "~/Components/VideoComponent";
+import { UserName, VideoInfo, VideoTitle } from "~/Components/VideoComponent";
+import { FollowButton, LikeDislikeButton, SaveButton } from "~/Components/Buttons/Buttons";
 
 const VideoPage: NextPage = () => {
   const router = useRouter();
@@ -68,8 +71,8 @@ const VideoPage: NextPage = () => {
 
   const video = videoData?.video;
   const user = videoData?.user;
-
-  const errorTypes = !videoData || !user || !video;
+  const viewer = videoData?.viewer;
+  const errorTypes = !videoData || !user || !video || !viewer;;
 
   const DataError = () => {
     if (videoLoading) {
@@ -121,9 +124,72 @@ const VideoPage: NextPage = () => {
                           createdAt={video.createdAt}
                         />
                       </div>
+
+                      <div className="flex-inline flex items-end justify-start  gap-4 self-start  ">
+                        <LikeDislikeButton
+                          EngagementData={{
+                            id: video.id,
+                            likes: video.likes,
+                            dislikes: video.dislikes,
+                          }}
+                          viewer={{
+                            hasDisliked: viewer.hasDisliked,
+                            hasLiked: viewer.hasLiked,
+                          }}
+                        />
+                        <SaveButton videoId={video.id} />
+                      </div>
                     </div>
+
+                    <div className="flex flex-row  place-content-between gap-x-4 ">
+                      <Link
+                        href={`/${video.userId}/ProfileVideos`}
+                        key={video.userId}
+                      >
+                        <div className="flex flex-row gap-2">
+                          <UserImage image={user.image || ""} />
+                          <button className="flex flex-col">
+                            <UserName name={user.name || ""} />
+                            <p className=" text-sm text-gray-600">
+                              {user.followers}
+                              <span> Followers</span>
+                            </p>
+                          </button>
+                        </div>
+                      </Link>
+                      <FollowButton
+                        followingId={user.id}
+                        viewer={{
+                          hasFollowed: viewer.hasFollowed,
+                        }}
+                      />
+                    </div>
+
+                    <Description
+                      text={video.description || ""}
+                      length={200}
+                      border={true}
+                    />
                   </div>
                 </div>
+
+                <CommentSection
+                  videoId={video.id}
+                  comments={videoData.comments.map(({ user, comment }) => ({
+                    comment: {
+                      id: comment.id,
+                      message: comment.message,
+                      createdAt: comment.createdAt,
+                    },
+                    user: {
+                      id: user.id,
+                      name: user.name,
+                      image: user.image,
+                      handle: user.handle,
+                    },
+                  }))}
+                  refetch={refetchVideoData}
+                />
               </div>
             </>
           )}

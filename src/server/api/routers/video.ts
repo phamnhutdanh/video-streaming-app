@@ -67,10 +67,52 @@ export const videoRouter = createTRPCRouter({
         comment,
       }));
 
+
+
+      let viewerHasLiked = false;
+      let viewerHasDisliked = false;
+      let viewerHasFollowed = false;
+
+
+ if (input.viewerId && input.viewerId !== "") {
+        viewerHasLiked = !!(await ctx.prisma.videoEngagement.findFirst({
+          where: {
+            videoId: input.id,
+            userId: input.viewerId,
+            engagementType: EngagementType.LIKE,
+          },
+        }));
+
+        viewerHasDisliked = !!(await ctx.prisma.videoEngagement.findFirst({
+          where: {
+            videoId: input.id,
+            userId: input.viewerId,
+            engagementType: EngagementType.DISLIKE,
+          },
+        }));
+
+        viewerHasFollowed = !!(await ctx.prisma.followEngagement.findFirst({
+          where: {
+            followingId: rawVideo.userId,
+            followerId: input.viewerId,
+          },
+        }));
+      } else {
+        viewerHasLiked = false;
+        viewerHasDisliked = false;
+        viewerHasFollowed = false;
+      }
+      const viewer = {
+        hasLiked: viewerHasLiked,
+        hasDisliked: viewerHasDisliked,
+        hasFollowed: viewerHasFollowed,
+      };
+
       return {
         video: videoWithLikesDislikesViews,
         user: userWithFollowers,
-        comments: commentsWithUsers,
+        comments: commentsWithUsers, 
+        viewer,
       };
     }),
 
@@ -164,4 +206,41 @@ export const videoRouter = createTRPCRouter({
 
       return { videos: videosWithCounts, users: users };
     }),
+
+    addVideoToPlaylist: protectedProcedure
+    .input(
+      z.object({
+        playlistId: z.string(),
+        videoId: z.string(),
+      })
+    )
+
+    .mutation(async ({ ctx, input }) => {
+      const playlistAlreadyHasVideo =
+        await ctx.prisma.playlistHasVideo.findMany({
+          where: {
+            playlistId: input.playlistId,
+            videoId: input.videoId,
+          },
+        });
+      if (playlistAlreadyHasVideo.length > 0) {
+        const deleteVideo = await ctx.prisma.playlistHasVideo.deleteMany({
+          where: {
+            playlistId: input.playlistId,
+            videoId: input.videoId,
+          },
+        });
+        return deleteVideo;
+      } else {
+        const playlistHasVideo = await ctx.prisma.playlistHasVideo.create({
+          data: {
+            playlistId: input.playlistId,
+            videoId: input.videoId,
+          },
+        });
+        return playlistHasVideo;
+      }
+    }),
+
+    
 });
