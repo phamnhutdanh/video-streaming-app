@@ -155,7 +155,7 @@ export default function Sidebar({
       <div
         className={classNames(
           closeSidebar ? "lg:w-20" : "lg:w-56",
-          "bottom-0 top-16  hidden lg:fixed lg:z-40 lg:flex lg:flex-col",
+          "bottom-0 top-16  hidden lg:fixed lg:z-40 lg:flex lg:flex-col"
         )}
       >
         {/*  Sidebar component FOR DESKTOP, swap this element with another sidebar if you like */}
@@ -181,13 +181,13 @@ export default function Sidebar({
                           item.current
                             ? " bg-gray-50 text-primary-600"
                             : " text-gray-700 hover:bg-gray-50 hover:text-primary-600",
-                          "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
+                          "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                         )}
                       >
                         {item.current
                           ? item.icon("h-5 w-5 shrink-0 stroke-primary-600 ")
                           : item.icon(
-                              "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600",
+                              "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600"
                             )}
                         <p className={classNames(closeSidebar ? "hidden" : "")}>
                           {item.name}
@@ -298,15 +298,15 @@ export default function Sidebar({
                                   item.current
                                     ? " bg-gray-50 text-primary-600"
                                     : " text-gray-700 hover:bg-gray-50 hover:text-primary-600",
-                                  "group flex gap-x-3 rounded-md px-2 py-1.5 text-sm font-semibold leading-6",
+                                  "group flex gap-x-3 rounded-md px-2 py-1.5 text-sm font-semibold leading-6"
                                 )}
                               >
                                 {item.current
                                   ? item.icon(
-                                      "h-5 w-5 shrink-0 stroke-primary-600",
+                                      "h-5 w-5 shrink-0 stroke-primary-600"
                                     )
                                   : item.icon(
-                                      "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600",
+                                      "h-5 w-5 shrink-0  stroke-gray-500  group-hover:stroke-primary-600"
                                     )}
                                 {item.name}
                               </Link>

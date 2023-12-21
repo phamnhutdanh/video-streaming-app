@@ -13,9 +13,10 @@ export {
   VideoTitle,
   VideoInfo,
   UserImage,
-  UserName
+  UserName,
 } from "./VideoComponent";
 
 export { ErrorMessage } from "./ErrorMessage";
 export { LoadingMessage } from "./ErrorMessage";
 export { Thumbnail } from "./Thumbnail";
+export { Content } from "./Content";

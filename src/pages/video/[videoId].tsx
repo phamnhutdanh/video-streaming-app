@@ -6,18 +6,24 @@ import { api } from "~/utils/api";
 import Link from "next/link";
 import { type NextPage } from "next";
 import {
+  FollowButton,
+  LikeDislikeButton,
+  SaveButton,
+} from "~/Components/Buttons/Buttons";
+import {
+  Description,
+  SmallSingleColumnVideo,
+  CommentSection,
   Layout,
   ErrorMessage,
   LoadingMessage,
+  VideoTitle,
+  VideoInfo,
   UserImage,
-  SmallSingleColumnVideo,
-  Description,
-  CommentSection,
+  UserName,
 } from "~/Components/Components";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { UserName, VideoInfo, VideoTitle } from "~/Components/VideoComponent";
-import { FollowButton, LikeDislikeButton, SaveButton } from "~/Components/Buttons/Buttons";
 
 const VideoPage: NextPage = () => {
   const router = useRouter();
@@ -47,6 +53,10 @@ const VideoPage: NextPage = () => {
   } = api.video.getRandomVideos.useQuery(20, {
     enabled: false, // this query will not run automatically
   });
+  const addViewMutation = api.videoEngagement.addViewCount.useMutation();
+  const addView = (input: { id: string; userId: string }) => {
+    addViewMutation.mutate(input);
+  };
 
   useEffect(() => {
     if (videoId) {
@@ -64,15 +74,10 @@ const VideoPage: NextPage = () => {
     }
   }, []);
 
-  const addViewMutation = api.videoEngagement.addViewCount.useMutation();
-  const addView = (input: { id: string; userId: string }) => {
-    addViewMutation.mutate(input);
-  };
-
   const video = videoData?.video;
   const user = videoData?.user;
   const viewer = videoData?.viewer;
-  const errorTypes = !videoData || !user || !video || !viewer;;
+  const errorTypes = !videoData || !user || !video || !viewer;
 
   const DataError = () => {
     if (videoLoading) {
@@ -113,18 +118,16 @@ const VideoPage: NextPage = () => {
                     url={video.videoUrl || ""}
                   />
                 </div>
-
                 <div className="flex space-x-3 rounded-2xl border border-gray-200 p-4 shadow-sm">
                   <div className="min-w-0 flex-1 space-y-3 ">
                     <div className="xs:flex-wrap flex flex-row justify-between gap-4 max-md:flex-wrap">
                       <div className="flex flex-col items-start justify-center gap-1 self-stretch ">
-                        <VideoTitle title={video.title || ""} />
+                        <VideoTitle title={video.title!} />
                         <VideoInfo
                           views={video.views}
                           createdAt={video.createdAt}
                         />
                       </div>
-
                       <div className="flex-inline flex items-end justify-start  gap-4 self-start  ">
                         <LikeDislikeButton
                           EngagementData={{
@@ -164,7 +167,6 @@ const VideoPage: NextPage = () => {
                         }}
                       />
                     </div>
-
                     <Description
                       text={video.description || ""}
                       length={200}
@@ -193,7 +195,6 @@ const VideoPage: NextPage = () => {
               </div>
             </>
           )}
-
           <div className="px-4 lg:w-2/5 lg:px-0   ">
             {!sidebarVideos ? (
               <DataError />

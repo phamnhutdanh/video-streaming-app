@@ -1,11 +1,34 @@
 import { type PrismaClient, EngagementType } from "@prisma/client";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+
+type Context = {
+  prisma: PrismaClient;
+};
+const checkVideoOwnership = async (
+  ctx: Context,
+  id: string,
+  userId: string
+) => {
+  const video = await ctx.prisma.video.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  if (!video || video.userId !== userId) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Video not found",
+    });
+  }
+  return video;
+};
 
 export const videoRouter = createTRPCRouter({
   getVideoById: publicProcedure
@@ -67,14 +90,11 @@ export const videoRouter = createTRPCRouter({
         comment,
       }));
 
-
-
       let viewerHasLiked = false;
       let viewerHasDisliked = false;
       let viewerHasFollowed = false;
 
-
- if (input.viewerId && input.viewerId !== "") {
+      if (input.viewerId && input.viewerId !== "") {
         viewerHasLiked = !!(await ctx.prisma.videoEngagement.findFirst({
           where: {
             videoId: input.id,
@@ -107,11 +127,10 @@ export const videoRouter = createTRPCRouter({
         hasDisliked: viewerHasDisliked,
         hasFollowed: viewerHasFollowed,
       };
-
       return {
         video: videoWithLikesDislikesViews,
         user: userWithFollowers,
-        comments: commentsWithUsers, 
+        comments: commentsWithUsers,
         viewer,
       };
     }),
@@ -207,8 +226,7 @@ export const videoRouter = createTRPCRouter({
       return { videos: videosWithCounts, users: users };
     }),
 
-
-    getVideosByUserId: publicProcedure
+  getVideosByUserId: publicProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
       const videosWithUser = await ctx.prisma.video.findMany({
@@ -241,7 +259,7 @@ export const videoRouter = createTRPCRouter({
       return { videos: videosWithCounts, users: users };
     }),
 
-    addVideoToPlaylist: protectedProcedure
+  addVideoToPlaylist: protectedProcedure
     .input(
       z.object({
         playlistId: z.string(),
@@ -276,5 +294,71 @@ export const videoRouter = createTRPCRouter({
       }
     }),
 
-    
+  publishVideo: protectedProcedure
+    .input(z.object({ id: z.string(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const video = await checkVideoOwnership(ctx, input.id, input.userId);
+      const publishVideo = await ctx.prisma.video.update({
+        where: {
+          id: video.id,
+        },
+
+        data: {
+          publish: !video.publish,
+        },
+      });
+
+      return publishVideo;
+    }),
+
+  deleteVideo: protectedProcedure
+    .input(z.object({ id: z.string(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const video = await checkVideoOwnership(ctx, input.id, input.userId);
+      const deletedVideo = await ctx.prisma.video.delete({
+        where: {
+          id: video.id,
+        },
+      });
+
+      return deletedVideo;
+    }),
+
+  updateVideo: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        userId: z.string(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        thumbnailUrl: z.string().optional(),
+      })
+    )
+
+    .mutation(async ({ ctx, input }) => {
+      const video = await checkVideoOwnership(ctx, input.id, input.userId);
+      const updatedVideo = await ctx.prisma.video.update({
+        where: {
+          id: video.id,
+        },
+        data: {
+          title: input.title ?? video.title,
+          description: input.description ?? video.description,
+          thumbnailUrl: input.thumbnailUrl ?? video.thumbnailUrl,
+        },
+      });
+      return updatedVideo;
+    }),
+  createVideo: protectedProcedure
+    .input(z.object({ userId: z.string(), videoUrl: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const video = await ctx.prisma.video.create({
+        data: {
+          userId: input.userId,
+          videoUrl: input.videoUrl,
+          publish: false,
+        },
+      });
+      return video;
+    }),
 });
