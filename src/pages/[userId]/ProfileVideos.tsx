@@ -9,8 +9,7 @@ import {
   LoadingMessage,
 } from "~/Components/Components";
 import { useSession } from "next-auth/react";
-import { Button } from "~/Components/Buttons/Buttons";
-import Plus from "~/Components/Icons/Plus";
+import { UploadButton } from "~/Components/Buttons/Buttons";
 
 const ProfileVideos: NextPage = () => {
   const router = useRouter();
@@ -31,15 +30,7 @@ const ProfileVideos: NextPage = () => {
             message="No Videos Uploaded"
             description="Click to upload new video. You have yet to upload a video."
           >
-            <Button
-              variant="primary"
-              size="2xl"
-              href="/profile/edit"
-              className="ml-2 flex"
-            >
-              <Plus className="mr-2 h-5 w-5 shrink-0 stroke-white" />
-              New Video
-            </Button>
+            <UploadButton refetch={async () => {}} />
           </ErrorMessage>
         </>
       );
