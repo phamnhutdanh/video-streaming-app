@@ -24,14 +24,23 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     };
 
     const formData = new FormData();
-    formData.append("upload_preset", "ml_default");
+    formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
+    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("resource_type", "video");
+    formData.append("delivery_type", "upload");
+    formData.append(
+      "public_id",
+      new Date().getMilliseconds().toString() + uploadedVideo?.name
+    );
+    formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
+    formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
 
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
 
     fetch(
-      "https://api.cloudinary.com/v1_1//" +
+      "https://api.cloudinary.com/v1_1/" +
         env.NEXT_PUBLIC_CLOUDINARY_NAME +
         "/video/upload",
 
