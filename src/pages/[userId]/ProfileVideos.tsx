@@ -15,9 +15,8 @@ const ProfileVideos: NextPage = () => {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const { userId } = router.query;
-  const { data, isLoading, error } = api.video.getVideosByUserId.useQuery(
-    userId as string
-  );
+  const { data, isLoading, error, refetch } =
+    api.video.getVideosByUserId.useQuery(userId as string);
 
   const errorTypes = !data || data.videos?.length === 0 || error;
   const Error = () => {
@@ -30,7 +29,7 @@ const ProfileVideos: NextPage = () => {
             message="No Videos Uploaded"
             description="Click to upload new video. You have yet to upload a video."
           >
-            <UploadButton refetch={async () => {}} />
+            <UploadButton refetch={refetch} />
           </ErrorMessage>
         </>
       );
