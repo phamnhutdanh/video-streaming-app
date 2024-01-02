@@ -22,7 +22,6 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
       userId: sessionData?.user.id as string,
       videoUrl: "",
     };
-
     const formData = new FormData();
     formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
     formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
@@ -38,6 +37,8 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
+
+    console.log(env.NEXT_PUBLIC_CLOUDINARY_NAME);
 
     fetch(
       "https://api.cloudinary.com/v1_1/" +
@@ -132,7 +133,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          Upload Video{" "}
+                          Upload Video
                         </Dialog.Title>
                         <div className="col-span-full">
                           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -169,7 +170,9 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                         type="reset"
                         variant="primary"
                         size="lg"
-                        onClick={() => handleSubmit()}
+                        onClick={() => {
+                          console.log("UPDATE");
+                        }}
                       >
                         Upload
                       </Button>
