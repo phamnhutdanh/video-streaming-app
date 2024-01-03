@@ -5,7 +5,6 @@ import "cropperjs/dist/cropper.css";
 import { Button } from "./Buttons";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
-import { env } from "~/env.mjs";
 
 export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const [open, setOpen] = useState(false);
@@ -15,45 +14,65 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const addVideoUpdateMutation = api.video.createVideo.useMutation();
 
   const handleSubmit = () => {
-    type UploadResponse = {
-      secure_url: string;
-    };
+    // type UploadResponse = {
+    //   secure_url: string;
+    //   url: string;
+    // };
     const videoData = {
       userId: sessionData?.user.id as string,
       videoUrl: "",
     };
+    console.log(uploadedVideo);
     const formData = new FormData();
-    formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
-    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-    formData.append("resource_type", "video");
-    formData.append("delivery_type", "upload");
-    formData.append(
-      "public_id",
-      new Date().getMilliseconds().toString() + uploadedVideo?.name
-    );
-    formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
+    const VAR_CLOUD_NAME = "dxz5uumy7";
+    //const VAR_UNSIGNED_UPLOAD_PRESET = "aosdf2uq";
+    const VAR_SIGNED_UPLOAD_PRESET = "g5iaro8h";
+
+    const VAR_RESOURCE_TYPE = "video";
+    const VAR_DELIVERY_TYPE = "upload";
+    const publicId = new Date().getMilliseconds().toString();
+    formData.append("cloud_name", VAR_CLOUD_NAME);
+    formData.append("upload_preset", VAR_SIGNED_UPLOAD_PRESET);
+    formData.append("resource_type", VAR_RESOURCE_TYPE);
+    formData.append("delivery_type", VAR_DELIVERY_TYPE);
+    formData.append("public_id", publicId);
+    formData.append("api_key", "272626169313357");
+    formData.append("api_secret", "qiUMjEzYF3_fq7j7OqcxYoVTXOk");
 
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
+    console.log("UPLOAD VIDEO");
+    // formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
+    // formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    // formData.append("resource_type", "video");
+    // formData.append("delivery_type", "upload");
+    // formData.append(
+    //   "public_id",
+    //   new Date().getMilliseconds().toString() + uploadedVideo?.name
+    // );
+    // formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
+    // formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
 
-    console.log(env.NEXT_PUBLIC_CLOUDINARY_NAME);
+    // if (uploadedVideo) {
+    //   formData.append("file", uploadedVideo);
+    // }
+
+    // console.log(env.NEXT_PUBLIC_CLOUDINARY_NAME);
 
     fetch(
-      "https://api.cloudinary.com/v1_1/" +
-        env.NEXT_PUBLIC_CLOUDINARY_NAME +
-        "/video/upload",
-
+      "https://api.cloudinary.com/v1_1/" + VAR_CLOUD_NAME + "/video/upload",
       {
         method: "POST",
         body: formData,
       }
     )
-      .then((response) => response.json() as Promise<UploadResponse>)
+      .then((response) => response.json())
       .then((data) => {
-        console.log("secure_url");
         console.log(data);
+        console.log("URL", data.url.toString());
+        console.log("SEC_URL ", data.secure_url.toString());
+
         if (data.secure_url !== undefined) {
           const newVideoData = {
             ...videoData,
@@ -170,9 +189,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                         type="reset"
                         variant="primary"
                         size="lg"
-                        onClick={() => {
-                          console.log("UPDATE");
-                        }}
+                        onClick={() => handleSubmit()}
                       >
                         Upload
                       </Button>
