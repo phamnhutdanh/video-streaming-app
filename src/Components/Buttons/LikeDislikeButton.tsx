@@ -16,7 +16,6 @@ interface LikeDislikeButtonProps {
   };
 }
 
-//* change name of component to Video  engagement
 export default function LikeDislikeButton({
   EngagementData,
   viewer,

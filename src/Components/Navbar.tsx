@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-// import { Logo } from "./Icons/Logo";
 import Link from "next/link";
 import Button from "./Buttons/Button";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -18,7 +17,6 @@ import {
   Logo,
 } from "./Icons/Icons";
 import User from "./Icons/User";
-// Add this function above your existing code to create a new IconWrapper component
 import { useRouter } from "next/router";
 import { type ChangeEvent, type KeyboardEvent } from "react";
 import { UserImage } from "./Components";

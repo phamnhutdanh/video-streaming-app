@@ -8,7 +8,6 @@ import {
 } from "./Components";
 import Head from "next/head";
 
-//
 interface PlaylistPageProps {
   playlist: {
     id: string;
