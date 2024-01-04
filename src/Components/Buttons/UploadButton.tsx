@@ -20,7 +20,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
 
   const errorMessage = "File size < 100MB";
 
-  const uploadVideo = async () => {
+  const uploadNewVideo = async () => {
     if (!uploadedVideo || folderPath === "" || folderPath === null) {
       return;
     }
@@ -28,8 +28,8 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
       userId: sessionData?.user.id as string,
       videoUrl: "",
     };
-
-    const input = folderPath + "\\" + uploadedVideo.name;
+    const input = URL.createObjectURL(uploadedVideo);
+    //const input = folderPath + "\\" + uploadedVideo.name;
     setLoading(true);
     console.log("VIDEO SIZE: ", uploadedVideo.size);
 
@@ -254,7 +254,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                           type="reset"
                           variant="primary"
                           size="lg"
-                          onClick={() => uploadVideo()}
+                          onClick={() => uploadNewVideo()}
                         >
                           Upload
                         </Button>
