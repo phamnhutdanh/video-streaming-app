@@ -12,22 +12,16 @@ const server = z.object({
       ? z.string().min(1)
       : z.string().min(1).optional(),
   NEXTAUTH_URL: z.preprocess(
-    // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-    // Since NextAuth.js automatically uses the VERCEL_URL if present.
     (str) => process.env.VERCEL_URL ?? str,
-    // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string().min(1) : z.string().url()
   ),
-  // // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
+
   EMAIL_SERVER_USER: z.string().min(1),
   EMAIL_SERVER_PASSWORD: z.string().min(1),
   EMAIL_SERVER_HOST: z.string().min(1),
   EMAIL_SERVER_PORT: z.string().min(1),
   EMAIL_FROM: z.string().min(1),
   NEXT_PUBLIC_CLOUDINARY_NAME: z.string().min(1),
-
-  // GOOGLE_CLIENT_ID: z.string(),
-  // GOOGLE_CLIENT_SECRET: z.string(),
 });
 
 /**
@@ -39,7 +33,6 @@ const client = z.object({
   NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string().min(1),
   NEXT_PUBLIC_CLOUDINARY_API_KEY: z.string().min(1),
   NEXT_PUBLIC_CLOUDINARY_API_SECTRECT: z.string().min(1),
-  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
 });
 
 /**
@@ -64,13 +57,7 @@ const processEnv = {
   NEXT_PUBLIC_CLOUDINARY_API_KEY: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   NEXT_PUBLIC_CLOUDINARY_API_SECTRECT:
     process.env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT,
-  // GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-  // GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
-
-// Don't touch the part below
-// --------------------------
 
 const merged = server.merge(client);
 
@@ -84,9 +71,7 @@ if (!!process.env.SKIP_ENV_VALIDATION == false) {
   const isServer = typeof window === "undefined";
 
   const parsed = /** @type {MergedSafeParseReturn} */ (
-    isServer
-      ? merged.safeParse(processEnv) // on server we can validate all env vars
-      : client.safeParse(processEnv) // on client we can only validate the ones that are exposed
+    isServer ? merged.safeParse(processEnv) : client.safeParse(processEnv)
   );
 
   if (parsed.success === false) {

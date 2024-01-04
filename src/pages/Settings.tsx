@@ -88,7 +88,7 @@ const Settings: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Vidchill </title>
+        <title>Setting </title>
         <meta name="description" content="Settings for VidChill" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -211,9 +211,7 @@ const Settings: NextPage = () => {
                       </label>
                       <div className="mt-2">
                         <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-600 sm:max-w-md">
-                          {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-                            vidchill .com/
-                          </span> */}
+                          <span className="flex select-none items-center pl-3 text-gray-500 sm:text-sm"></span>
                           <input
                             type="text"
                             name="handle"
@@ -406,13 +404,7 @@ export function CropImageModal({
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                   <>
-                    <ImageCropper
-                      setCroppedImage={setCroppedImage}
-                      image={image}
-                      imageType={imageType}
-                      handleSubmit={handleSubmit}
-                      setOpen={setOpen}
-                    />
+                    <ImageCropper image={image} setOpen={setOpen} />
                   </>
                 </Dialog.Panel>
               </Transition.Child>

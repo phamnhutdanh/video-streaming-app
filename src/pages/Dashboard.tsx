@@ -65,7 +65,7 @@ const Dashboard: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Creator Studio - VidChill</title>
+        <title>Creator Studio</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout closeSidebar={true}>
