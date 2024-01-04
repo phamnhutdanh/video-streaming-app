@@ -7,6 +7,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { uploadLargeVideo, uploadVideo } from "~/server/utils/cloudinary";
 
 type Context = {
   prisma: PrismaClient;
@@ -257,6 +258,20 @@ export const videoRouter = createTRPCRouter({
       );
 
       return { videos: videosWithCounts, users: users };
+    }),
+
+  uploadVideoToCloudinary: publicProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const res = await uploadVideo(input).then(async (r) => r);
+      return res;
+    }),
+
+  uploadLargeVideoToCloudinary: publicProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const res = await uploadLargeVideo(input).then(async (r) => r);
+      return res;
     }),
 
   addVideoToPlaylist: protectedProcedure

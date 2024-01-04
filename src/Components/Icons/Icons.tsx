@@ -25,6 +25,7 @@ export { ChevronUp, ChevronDown } from "./Chevron";
 export { default as Search } from "./Search";
 export { default as Menu } from "./Menu";
 export { RedTrash } from "./RedTrash";
+export { default as LoadingIndicator } from "./LoadingIndicator";
 export {
   GreenPlay,
   GreenHorn,

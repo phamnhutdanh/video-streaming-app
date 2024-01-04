@@ -1,10 +1,11 @@
 import { Transition, Dialog } from "@headlessui/react";
-import React, { useState, useRef, Fragment } from "react";
-import { Plus } from "../Icons/Icons";
+import React, { useState, useRef, Fragment, ChangeEvent } from "react";
+import { LoadingIndicator, Plus } from "../Icons/Icons";
 import "cropperjs/dist/cropper.css";
 import { Button } from "./Buttons";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
+import { env } from "~/env.mjs";
 
 export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const [open, setOpen] = useState(false);
@@ -12,67 +13,83 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
   const { data: sessionData } = useSession();
   const addVideoUpdateMutation = api.video.createVideo.useMutation();
+  const uploadNormalVideo = api.video.uploadVideoToCloudinary.useMutation();
 
-  const handleSubmit = () => {
-    // type UploadResponse = {
-    //   secure_url: string;
-    //   url: string;
-    // };
+  const [folderPath, setFolderPath] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const errorMessage = "File size < 100MB";
+
+  const uploadVideo = async () => {
+    if (!uploadedVideo) {
+      return;
+    }
+
+    const input = folderPath + "\\" + uploadedVideo?.name;
+    setLoading(true);
+    console.log("VIDEO SIZE: ", uploadedVideo!.size);
+
+    uploadNormalVideo.mutate(input, {
+      onError(error, variables, context) {
+        console.log(error);
+        setUploadedVideo(null);
+        setLoading(false);
+      },
+      onSuccess: (res) => {
+        console.log(res.secure_url);
+        const videoData = {
+          userId: sessionData?.user.id as string,
+          videoUrl: res.secure_url,
+        };
+        addVideoUpdateMutation.mutate(videoData, {
+          onSuccess: () => {
+            void refetch();
+          },
+        });
+        setOpen(false);
+        setUploadedVideo(null);
+        setLoading(false);
+        void refetch();
+      },
+    });
+  };
+
+  const handleSubmit = async () => {
+    type UploadResponse = {
+      secure_url: string;
+      url: string;
+    };
     const videoData = {
       userId: sessionData?.user.id as string,
       videoUrl: "",
     };
-    console.log(uploadedVideo);
-    const formData = new FormData();
-    const VAR_CLOUD_NAME = "dxz5uumy7";
-    //const VAR_UNSIGNED_UPLOAD_PRESET = "aosdf2uq";
-    const VAR_SIGNED_UPLOAD_PRESET = "g5iaro8h";
 
-    const VAR_RESOURCE_TYPE = "video";
-    const VAR_DELIVERY_TYPE = "upload";
+    const formData = new FormData();
     const publicId = new Date().getMilliseconds().toString();
-    formData.append("cloud_name", VAR_CLOUD_NAME);
-    formData.append("upload_preset", VAR_SIGNED_UPLOAD_PRESET);
-    formData.append("resource_type", VAR_RESOURCE_TYPE);
-    formData.append("delivery_type", VAR_DELIVERY_TYPE);
-    formData.append("public_id", publicId);
-    formData.append("api_key", "272626169313357");
-    formData.append("api_secret", "qiUMjEzYF3_fq7j7OqcxYoVTXOk");
+
+    formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
+    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("resource_type", "video");
+    formData.append("delivery_type", "upload");
+    formData.append("public_id", new Date().getMilliseconds().toString());
+    formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
+    formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
 
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
-    console.log("UPLOAD VIDEO");
-    // formData.append("cloud_name", env.NEXT_PUBLIC_CLOUDINARY_NAME);
-    // formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-    // formData.append("resource_type", "video");
-    // formData.append("delivery_type", "upload");
-    // formData.append(
-    //   "public_id",
-    //   new Date().getMilliseconds().toString() + uploadedVideo?.name
-    // );
-    // formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
-    // formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
 
-    // if (uploadedVideo) {
-    //   formData.append("file", uploadedVideo);
-    // }
+    const fetchUrl =
+      "https://api.cloudinary.com/v1_1/" +
+      env.NEXT_PUBLIC_CLOUDINARY_NAME +
+      "/video/upload";
 
-    // console.log(env.NEXT_PUBLIC_CLOUDINARY_NAME);
-
-    fetch(
-      "https://api.cloudinary.com/v1_1/" + VAR_CLOUD_NAME + "/video/upload",
-      {
-        method: "POST",
-        body: formData,
-      }
-    )
+    fetch(fetchUrl, {
+      method: "POST",
+      body: formData,
+    })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        console.log("URL", data.url.toString());
-        console.log("SEC_URL ", data.secure_url.toString());
-
         if (data.secure_url !== undefined) {
           const newVideoData = {
             ...videoData,
@@ -94,12 +111,20 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      if (e.target.files[0]!.size >= 100000000) {
+        return;
+      }
       setUploadedVideo(e.target.files[0] ? e.target.files[0] : null);
     }
   };
 
   const handleClick = () => {
     setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setUploadedVideo(null);
   };
 
   return (
@@ -154,6 +179,21 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                         >
                           Upload Video
                         </Dialog.Title>
+                        <div className="mt-2.5">
+                          <input
+                            type="text"
+                            name="first-name"
+                            id="first-name"
+                            autoComplete="given-name"
+                            placeholder="Folder to file path"
+                            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            value={folderPath}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setFolderPath(e.target.value)
+                            }
+                          />
+                        </div>
+
                         <div className="col-span-full">
                           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                             <div className="text-center">
@@ -168,14 +208,19 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                                     >
                                       <span>Upload a Video</span>
                                       <input
+                                        type="text"
+                                        className="sr-only"
+                                        onChange={onFileChange}
+                                      />
+                                      <input
                                         id="file-upload"
                                         name="file-upload"
                                         type="file"
                                         className="sr-only"
                                         onChange={onFileChange}
                                       />
+                                      <p>{errorMessage}</p>
                                     </label>
-                                    <p className="pl-1">or drag and drop</p>
                                   </div>
                                 </div>
                               )}
@@ -184,23 +229,36 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                         </div>
                       </div>
                     </div>
-                    <div className=" relative mt-5 flex flex-row-reverse gap-2 sm:mt-4 ">
-                      <Button
-                        type="reset"
-                        variant="primary"
-                        size="lg"
-                        onClick={() => handleSubmit()}
-                      >
-                        Upload
-                      </Button>
-                      <Button
-                        variant="secondary-gray"
-                        size="lg"
-                        onClick={() => setOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
+
+                    {loading ? (
+                      <div className="mx-auto ml-56 mt-4 flex max-w-lg flex-col justify-center">
+                        <LoadingIndicator> </LoadingIndicator>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+
+                    {loading ? (
+                      <div></div>
+                    ) : (
+                      <div className=" relative mt-5 flex flex-row-reverse gap-2 sm:mt-4 ">
+                        <Button
+                          type="reset"
+                          variant="primary"
+                          size="lg"
+                          onClick={() => uploadVideo()}
+                        >
+                          Upload
+                        </Button>
+                        <Button
+                          variant="secondary-gray"
+                          size="lg"
+                          onClick={() => handleClose()}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
                   </>
                 </Dialog.Panel>
               </Transition.Child>
