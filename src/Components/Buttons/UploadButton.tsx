@@ -15,13 +15,12 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const addVideoUpdateMutation = api.video.createVideo.useMutation();
   const uploadNormalVideo = api.video.uploadVideoToCloudinary.useMutation();
 
-  const [folderPath, setFolderPath] = useState("");
   const [loading, setLoading] = useState(false);
 
   const errorMessage = "File size < 100MB";
 
   const uploadNewVideo = async () => {
-    if (!uploadedVideo || folderPath === "" || folderPath === null) {
+    if (!uploadedVideo) {
       return;
     }
     const videoData = {
@@ -63,6 +62,10 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   };
 
   const handleSubmit = async () => {
+    if (!uploadedVideo) {
+      return;
+    }
+    setLoading(true);
     type UploadResponse = {
       secure_url: string;
       url: string;
@@ -79,10 +82,9 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
     formData.append("resource_type", "video");
     formData.append("delivery_type", "upload");
-    formData.append("public_id", new Date().getMilliseconds().toString());
+    formData.append("public_id", publicId);
     formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
     formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
-
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
@@ -99,6 +101,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.secure_url !== undefined) {
+          console.log(data.secure_url);
           const newVideoData = {
             ...videoData,
             ...(data.secure_url && { videoUrl: data.secure_url }),
@@ -107,12 +110,16 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
           addVideoUpdateMutation.mutate(newVideoData, {
             onSuccess: () => {
               setOpen(false);
+              setUploadedVideo(null);
+              setLoading(false);
               void refetch();
             },
           });
         }
       })
       .catch((error) => {
+        setUploadedVideo(null);
+        setLoading(false);
         console.error("An error occurred:", error);
       });
   };
@@ -187,20 +194,6 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                         >
                           Upload Video
                         </Dialog.Title>
-                        <div className="mt-2.5">
-                          <input
-                            type="text"
-                            name="first-name"
-                            id="first-name"
-                            autoComplete="given-name"
-                            placeholder="Folder to file path"
-                            className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            value={folderPath}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setFolderPath(e.target.value)
-                            }
-                          />
-                        </div>
 
                         <div className="col-span-full">
                           <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -254,7 +247,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
                           type="reset"
                           variant="primary"
                           size="lg"
-                          onClick={() => uploadNewVideo()}
+                          onClick={() => handleSubmit()}
                         >
                           Upload
                         </Button>

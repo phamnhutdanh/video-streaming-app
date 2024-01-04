@@ -283,7 +283,6 @@ export function CropImageModal({
   imageType,
 }: CropImageModalProps) {
   const [image, setImage] = useState<File | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const addUserUpdateMutation = api.user.updateUser.useMutation();
 
@@ -293,7 +292,7 @@ export function CropImageModal({
       setOpen(true);
     }
   };
-  const handleSubmit = (croppedDataUrl: string) => {
+  const handleSubmit = (imageFile: File) => {
     type UploadResponse = {
       secure_url: string;
     };
@@ -303,8 +302,8 @@ export function CropImageModal({
     };
 
     const formData = new FormData();
-    formData.append("upload_preset", "user_uploads");
-    formData.append("file", croppedDataUrl);
+    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("file", imageFile);
 
     fetch(
       "https://api.cloudinary.com/v1_1/" +
@@ -404,7 +403,12 @@ export function CropImageModal({
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                   <>
-                    <ImageCropper image={image} setOpen={setOpen} />
+                    <ImageCropper
+                      image={image ? image : ""}
+                      setOpen={setOpen}
+                      imageType={imageType}
+                      handleSubmit={handleSubmit}
+                    />
                   </>
                 </Dialog.Panel>
               </Transition.Child>

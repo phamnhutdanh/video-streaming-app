@@ -39,6 +39,7 @@ const Home: NextPage = () => {
           <Error />
         ) : (
           <>
+            <UploadButton refetch={async () => {}} />
             <MuliColumnVideo
               videos={data.videos.map((video) => ({
                 id: video?.id || "",

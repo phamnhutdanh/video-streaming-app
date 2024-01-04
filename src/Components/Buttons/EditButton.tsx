@@ -259,9 +259,13 @@ export function EditButton({ video, refetch }: EditButtonProps) {
 export function ImageCropper({
   image,
   setOpen,
+  handleSubmit,
+  imageType,
 }: {
   image: File | null | string;
   setOpen?: (open: boolean) => void;
+  imageType?: "backgroundImage" | "image";
+  handleSubmit?: (imageFile: File) => void;
 }) {
   const completeCrop = () => {
     setOpen ? setOpen(false) : null;
