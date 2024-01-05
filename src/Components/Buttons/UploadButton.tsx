@@ -81,7 +81,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     const publicId = new Date().getMilliseconds().toString();
 
     const eagerConfig =
-      "sp_full_hd/m3u8|sp_full_hd/mpd|q_auto,vc_h264/mp4|q_auto,vc_vp8/mp4|q_auto,vc_vp8/webm";
+      "sp_full_hd/m3u8|sp_full_hd/mpd";
 
     //"sp_full_hd/m3u8|sp_full_hd/mpd";
     const timestamp = Math.round(new Date().getTime() / 1000);
