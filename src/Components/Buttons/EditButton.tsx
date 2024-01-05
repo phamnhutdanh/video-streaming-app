@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { env } from "~/env.mjs";
 import Image from "next/image";
+import crypto from "crypto";
 
 interface EditButtonProps {
   video: {
@@ -53,8 +54,20 @@ export function EditButton({ video, refetch }: EditButtonProps) {
     };
 
     const formData = new FormData();
-    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+
+    const publicId = new Date().getMilliseconds().toString();
     if (image) formData.append("file", image);
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = crypto.createHash("sha1");
+    signature.update(
+      `public_id=${publicId}&timestamp=${timestamp}&upload_preset=${env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}${env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT}`
+    );
+    formData.append("upload_preset", env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+    formData.append("public_id", publicId);
+    formData.append("api_key", env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
+    formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
+    formData.append("timestamp", timestamp.toString());
+    formData.append("signature", signature.digest("hex"));
 
     fetch(
       "https://api.cloudinary.com/v1_1/" +
