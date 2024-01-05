@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { UploadButton } from "~/Components/Buttons/UploadButton";
 import { Layout, MuliColumnVideo } from "~/Components/Components";
 import { ErrorMessage, LoadingMessage } from "~/Components/ErrorMessage";
 import { api } from "~/utils/api";
@@ -39,7 +38,6 @@ const Home: NextPage = () => {
           <Error />
         ) : (
           <>
-            <UploadButton refetch={async () => {}} />
             <MuliColumnVideo
               videos={data.videos.map((video) => ({
                 id: video?.id || "",
