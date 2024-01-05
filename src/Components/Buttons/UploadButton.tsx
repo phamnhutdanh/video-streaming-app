@@ -37,9 +37,9 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     const formData = new FormData();
     const publicId = new Date().getMilliseconds().toString();
 
-    const eagerConfig = "sp_full_hd/m3u8|sp_full_hd/mpd";
+    const eagerConfig =
+      "sp_full_hd/m3u8|sp_hd/m3u8|sp_sd/m3u8|sp_full_hd/mpd|sp_hd/mpd|sp_sd/mpd|sp_auto/m3u8|sp_auto/m3u8";
 
-    //"sp_full_hd/m3u8|sp_full_hd/mpd";
     const timestamp = Math.round(new Date().getTime() / 1000);
     const signature = crypto.createHash("sha1");
     signature.update(

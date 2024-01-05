@@ -25,6 +25,10 @@ import {
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 
+import { Replay } from "vimond-replay";
+import "vimond-replay/index.css";
+import CompoundVideoStreamer from "vimond-replay/video-streamer/compound";
+
 const VideoPage: NextPage = () => {
   const router = useRouter();
   const { videoId } = router.query;
@@ -95,6 +99,17 @@ const VideoPage: NextPage = () => {
     }
   };
 
+  const replayOptions = {
+    videoStreamer: {
+      hlsjs: {
+        customConfiguration: {
+          capLevelToPlayerSize: true,
+          maxBufferLength: 45,
+        },
+      },
+    },
+  };
+
   return (
     <>
       <Head>
@@ -110,13 +125,27 @@ const VideoPage: NextPage = () => {
             <>
               <div className="w-full sm:px-4 lg:w-3/5 ">
                 <div className="py-4">
-                  <ReactPlayer
-                    controls={true}
-                    style={{ borderRadius: "1rem", overflow: "hidden" }}
-                    width={"100%"}
-                    height={"50%"}
-                    url={video.videoUrl || ""}
-                  />
+                  {video.videoUrl?.endsWith(".m3u8") ||
+                  video.videoUrl?.endsWith(".mpd") ? (
+                    <Replay
+                      source={{
+                        streamUrl: video.videoUrl,
+                        contentType: "application/x-mpegurl",
+                      }}
+                      initialPlaybackProps={{ isPaused: true }}
+                      options={replayOptions}
+                    >
+                      <CompoundVideoStreamer />
+                    </Replay>
+                  ) : (
+                    <Replay
+                      source={{
+                        streamUrl: video?.videoUrl!,
+                      }}
+                      initialPlaybackProps={{ isPaused: true }}
+                      options={replayOptions}
+                    ></Replay>
+                  )}
                 </div>
                 <div className="flex space-x-3 rounded-2xl border border-gray-200 p-4 shadow-sm">
                   <div className="min-w-0 flex-1 space-y-3 ">
