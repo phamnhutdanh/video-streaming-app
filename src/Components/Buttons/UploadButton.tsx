@@ -15,53 +15,10 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
   const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
   const { data: sessionData } = useSession();
   const addVideoUpdateMutation = api.video.createVideo.useMutation();
-  const uploadNormalVideo = api.video.uploadVideoToCloudinary.useMutation();
 
   const [loading, setLoading] = useState(false);
 
   const errorMessage = "File size < 100MB";
-
-  const uploadNewVideo = async () => {
-    if (!uploadedVideo) {
-      return;
-    }
-    const videoData = {
-      userId: sessionData?.user.id as string,
-      videoUrl: "",
-    };
-    const input = URL.createObjectURL(uploadedVideo);
-    //const input = folderPath + "\\" + uploadedVideo.name;
-    setLoading(true);
-    console.log("VIDEO SIZE: ", uploadedVideo.size);
-
-    uploadNormalVideo.mutate(input, {
-      onError(error, variables, context) {
-        console.log(error);
-        setUploadedVideo(null);
-        setLoading(false);
-      },
-      onSuccess: (res) => {
-        console.log(res.secure_url);
-        if (res.secure_url !== undefined) {
-          const newVideoData = {
-            ...videoData,
-            ...(res.secure_url && { videoUrl: res.secure_url }),
-          };
-
-          addVideoUpdateMutation.mutate(newVideoData, {
-            onSuccess: () => {
-              setOpen(false);
-              void refetch();
-            },
-          });
-        }
-        setOpen(false);
-        setUploadedVideo(null);
-        setLoading(false);
-        void refetch();
-      },
-    });
-  };
 
   const handleSubmit = async () => {
     if (!uploadedVideo) {
@@ -80,8 +37,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     const formData = new FormData();
     const publicId = new Date().getMilliseconds().toString();
 
-    const eagerConfig =
-      "sp_full_hd/m3u8|sp_full_hd/mpd";
+    const eagerConfig = "sp_full_hd/m3u8|sp_full_hd/mpd";
 
     //"sp_full_hd/m3u8|sp_full_hd/mpd";
     const timestamp = Math.round(new Date().getTime() / 1000);
