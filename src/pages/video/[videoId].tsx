@@ -27,6 +27,7 @@ import Head from "next/head";
 
 import { Replay } from "vimond-replay";
 import "vimond-replay/index.css";
+import HlsjsVideoStreamer from "vimond-replay/video-streamer/hlsjs";
 import CompoundVideoStreamer from "vimond-replay/video-streamer/compound";
 
 const VideoPage: NextPage = () => {
@@ -62,6 +63,8 @@ const VideoPage: NextPage = () => {
     addViewMutation.mutate(input);
   };
 
+  var videoUrl = "";
+
   useEffect(() => {
     if (videoId) {
       void refetchVideoData();
@@ -82,7 +85,9 @@ const VideoPage: NextPage = () => {
   const user = videoData?.user;
   const viewer = videoData?.viewer;
   const errorTypes = !videoData || !user || !video || !viewer;
-
+  videoUrl =
+    video?.videoUrl?.substring(0, video.videoUrl.lastIndexOf(".")) + ".m3u8";
+  console.log("VIDEO URL: ", videoUrl);
   const DataError = () => {
     if (videoLoading) {
       return <LoadingMessage />;
@@ -125,26 +130,15 @@ const VideoPage: NextPage = () => {
             <>
               <div className="w-full sm:px-4 lg:w-3/5 ">
                 <div className="py-4">
-                  {video.videoUrl?.endsWith(".m3u8") ||
-                  video.videoUrl?.endsWith(".mpd") ? (
+                  {videoUrl !== "" && videoUrl !== null && (
                     <Replay
                       source={{
-                        streamUrl: video.videoUrl,
-                        contentType: "application/x-mpegurl",
+                        streamUrl: videoUrl,
                       }}
-                      initialPlaybackProps={{ isPaused: true }}
                       options={replayOptions}
                     >
-                      <CompoundVideoStreamer />
+                      <HlsjsVideoStreamer />
                     </Replay>
-                  ) : (
-                    <Replay
-                      source={{
-                        streamUrl: video?.videoUrl!,
-                      }}
-                      initialPlaybackProps={{ isPaused: true }}
-                      options={replayOptions}
-                    ></Replay>
                   )}
                 </div>
                 <div className="flex space-x-3 rounded-2xl border border-gray-200 p-4 shadow-sm">
