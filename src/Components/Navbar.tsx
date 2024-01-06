@@ -55,33 +55,9 @@ export default function Navbar({ children }: NavbarProps) {
       lineAbove: false,
     },
     {
-      icon: (className) => <HelpCircle className={className} />,
-      name: "Help",
-      path: "/Blog/Help",
-      lineAbove: true,
-    },
-    {
       icon: (className) => <Settings className={className} />,
       name: "Settings",
       path: "/Settings",
-      lineAbove: false,
-    },
-    {
-      icon: (className) => <MessagePlusSquare className={className} />,
-      name: "Feedback",
-      path: "#",
-      lineAbove: false,
-    },
-    {
-      icon: (className) => <File className={className} />,
-      name: "Terms of Service",
-      path: "/Blog/TOS",
-      lineAbove: true,
-    },
-    {
-      icon: (className) => <Lock className={className} />,
-      name: "Privacy",
-      path: "/Blog/Privacy",
       lineAbove: false,
     },
     {
@@ -92,32 +68,7 @@ export default function Navbar({ children }: NavbarProps) {
     },
   ];
 
-  const signedOutNavigation: NavigationItem[] = [
-    {
-      icon: (className) => <HelpCircle className={className} />,
-      name: "Help",
-      path: "/Blog/Help",
-      lineAbove: true,
-    },
-    {
-      icon: (className) => <MessagePlusSquare className={className} />,
-      name: "Feedback",
-      path: `mailto:vidchill@vidchill.com`,
-      lineAbove: false,
-    },
-    {
-      icon: (className) => <File className={className} />,
-      name: "Terms of Service",
-      path: "/Blog/TOS",
-      lineAbove: true,
-    },
-    {
-      icon: (className) => <Lock className={className} />,
-      name: "Privacy",
-      path: "/Blog/Privacy",
-      lineAbove: false,
-    },
-  ];
+  const signedOutNavigation: NavigationItem[] = [];
 
   const Navigation = sessionData ? signedInNavigation : signedOutNavigation;
 
