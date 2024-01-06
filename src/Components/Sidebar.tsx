@@ -194,19 +194,6 @@ export default function Sidebar({
                     Settings
                   </p>
                 </Link>
-                <Link
-                  href="/Blog/Help"
-                  className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-primary-600"
-                >
-                  <HelpCircle
-                    className={
-                      "h-5 w-5 shrink-0 stroke-gray-500 group-hover:stroke-primary-600"
-                    }
-                  />
-                  <p className={classNames(closeSidebar ? "hidden" : "")}>
-                    Help
-                  </p>
-                </Link>
               </li>
             </ul>
           </nav>
