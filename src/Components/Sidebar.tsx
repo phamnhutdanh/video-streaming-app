@@ -102,39 +102,13 @@ export default function Sidebar({
       current: router.pathname === `/CreatorStudio`,
     },
     {
-      name: "Help",
-      path: `/Blog/Help`,
-      icon: (className) => <HelpCircle className={className} />,
-      current: router.pathname === `/Blog/Help`,
-    },
-    {
       name: "Settings",
       path: `/Settings`,
       icon: (className) => <Settings className={className} />,
       current: router.pathname === `/Settings`,
     },
-    {
-      name: "Feedback",
-      path: `mailto:vidchill@vidchill.com`,
-      icon: (className) => <MessagePlusSquare className={className} />,
-      current: router.pathname === `/Feedback`,
-    },
   ];
-  const SignedOutMobileNavigation: NavigationItem[] = [
-    {
-      name: "Help",
-      path: `/Blog/Help`,
-      icon: (className) => <HelpCircle className={className} />,
-      current: router.pathname === `/Blog/Help`,
-    },
-
-    {
-      name: "Feedback",
-      path: `mailto:vidchill@vidchill.com`,
-      icon: (className) => <MessagePlusSquare className={className} />,
-      current: router.pathname === `/Feedback`,
-    },
-  ];
+  const SignedOutMobileNavigation: NavigationItem[] = [];
 
   const mobileNavigation = sessionData
     ? SignedInMobileNavigation
