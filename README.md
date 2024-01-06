@@ -1,6 +1,6 @@
 ![UIT](https://img.shields.io/badge/from-UIT%20VNUHCM-blue?style=for-the-badge&link=https%3A%2F%2Fwww.uit.edu.vn%2F)
 
-# Getting Started for development
+# For development
 
 ## Step 1: Clone this repository
 First, you will need to clone this **Repository**.
@@ -19,9 +19,6 @@ npm install
 yarn install
 ```
 ## Step 3: Start your Application
-
-### For Android
-
 ```bash
 # using npm
 npm run dev
