@@ -37,9 +37,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     const formData = new FormData();
     const publicId = new Date().getMilliseconds().toString();
 
-    const eagerConfig =
-      "sp_full_hd/m3u8|sp_hd/m3u8|sp_sd/m3u8|sp_full_hd/mpd|sp_hd/mpd|sp_sd/mpd|sp_auto/m3u8|sp_auto/m3u8";
-
+    const eagerConfig = "sp_full_hd/m3u8|sp_hd/m3u8|sp_sd/m3u8";
     const timestamp = Math.round(new Date().getTime() / 1000);
     const signature = crypto.createHash("sha1");
     signature.update(
@@ -55,11 +53,7 @@ export function UploadButton({ refetch }: { refetch: () => Promise<unknown> }) {
     formData.append("api_secret", env.NEXT_PUBLIC_CLOUDINARY_API_SECTRECT);
     formData.append("timestamp", timestamp.toString());
     formData.append("signature", signature.digest("hex"));
-    formData.append(
-      "eager",
-      eagerConfig
-      // "sp_full_hd/m3u8|sp_full_hd/mpd|q_auto:best,vc_h264/mp4|f_mp4,q_auto:best,vc_h264|q_auto:best,vc_h265/mp4|q_auto:best,vc_vp8/mp4|q_auto:best,vc_vp9/mp4|f_mp4,q_auto:best,vc_h265|f_mp4,q_auto:best,vc_vp8|f_mp4,q_auto:best,vc_vp9|q_auto:best,vc_vp8/webm|q_auto:best,vc_vp9/webm|f_webm,q_auto:best,vc_vp8|f_webm,q_auto:best,vc_vp9"
-    );
+    formData.append("eager", eagerConfig);
     if (uploadedVideo) {
       formData.append("file", uploadedVideo);
     }
